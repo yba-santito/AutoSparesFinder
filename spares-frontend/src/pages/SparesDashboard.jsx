@@ -14,8 +14,8 @@ export default function SparesDashboard() {
     const fetchParts = async () => {
         setLoading(true);
         try {
-            // Notice this is the exact same URL you tested in your browser earlier!
-            const response = await fetch(`http://localhost:5000/api/parts?make=${make}&model=${model}&year=${year}`);
+            // Use a relative path so the Vite proxy handles it automatically
+            const response = await fetch(`/api/parts?make=${make}&model=${model}&year=${year}`);
             const data = await response.json();
             
             // We save the data into our 'inventory' state variable

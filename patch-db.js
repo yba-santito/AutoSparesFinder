@@ -84,6 +84,22 @@ db.serialize(() => {
         DROP TABLE Parts;
         ALTER TABLE Parts_new RENAME TO Parts;
 
+        -- ==========================================================
+        -- PHASE 3: INITIALIZE USERS TABLE AND DATA
+        -- ==========================================================
+
+        CREATE TABLE IF NOT EXISTS Users (
+            user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            role TEXT DEFAULT 'staff'
+        );
+
+        INSERT OR IGNORE INTO Users (username, password, role) VALUES 
+        ('admin', 'admin123', 'admin'),
+        ('manager', 'manager123', 'manager'),
+        ('staff', 'staff123', 'staff');
+
         COMMIT;
         PRAGMA foreign_keys=on;
     `;
@@ -91,9 +107,17 @@ db.serialize(() => {
     db.exec(sql, (err) => {
         if (err) {
             console.error("Error migrating tables:", err.message);
+            db.close();
         } else {
             console.log("Database patch completed successfully!");
+            // Safely attempt to add new columns if they don't exist yet
+            db.run("ALTER TABLE PartLeads ADD COLUMN make TEXT", () => {
+                db.run("ALTER TABLE PartLeads ADD COLUMN model TEXT", () => {
+                    db.run("ALTER TABLE PartLeads ADD COLUMN year TEXT", () => {
+                        db.close();
+                    });
+                });
+            });
         }
-        db.close();
     });
 });

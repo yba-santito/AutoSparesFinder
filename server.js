@@ -1,5 +1,9 @@
 // server.js
-require('dotenv').config();
+try {
+    require('dotenv').config();
+} catch (err) {
+    console.warn("Notice: 'dotenv' module not found, skipping .env file injection.");
+}
 const express = require('express');
 const path = require('path');
 const jwt = require('jsonwebtoken');
@@ -56,6 +60,13 @@ app.get('/api/part-types', async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+app.get('/api/makes', async (req, res) => {
+    try {
+        const data = await dbService.getAllMakes();
+        res.json(data);
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 app.get('/api/vehicles', async (req, res) => {
     try {
         const data = await dbService.getAllVehicles();
@@ -67,6 +78,31 @@ app.get('/api/search-parts', async (req, res) => {
     try {
         const { make, model, year } = req.query;
         const data = await dbService.getPartsForVehicle(make, model, year);
+        res.json(data);
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Public API: Get all parts
+app.get('/api/parts', async (req, res) => {
+    try {
+        const data = await dbService.getAllParts();
+        res.json(data);
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Public API: Get single part by ID for product view
+app.get('/api/parts/:id', async (req, res) => {
+    try {
+        const part = await dbService.getPartById(req.params.id);
+        if (!part) return res.status(404).json({ error: 'Part not found' });
+        res.json(part);
+    } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Public API: Get all products (mapped to parts catalog)
+app.get('/api/products', async (req, res) => {
+    try {
+        const data = await dbService.getAllParts();
         res.json(data);
     } catch (err) { res.status(500).json({ error: err.message }); }
 });

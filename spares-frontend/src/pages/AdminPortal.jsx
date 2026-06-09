@@ -8,7 +8,7 @@ const AdminPortal = () => {
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState('dashboard');
 
-  const API_BASE_URL = window.location.hostname === 'localhost' ? 'http://localhost:3000' : '';
+  const API_BASE_URL = '';
 
   const getAuthHeaders = useCallback(() => ({
     'Content-Type': 'application/json',

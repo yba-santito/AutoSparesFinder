@@ -1,15 +1,18 @@
 {
-    "scripts":  {
-                    "start":  "node server.js",
-                    "backend":  "node server.js",
-                    "frontend":  "cd spares-frontend \u0026\u0026 npm run dev",
-                    "build":  "cd spares-frontend \u0026\u0026 npm run build"
-                },
-    "dependencies":  {
-                         "express":  "^5.2.1",
-                         "sqlite3":  "^6.0.1",
-                         "bcryptjs":  "^2.4.3",
-                         "jsonwebtoken": "^9.0.3",
-                         "dotenv":  "^16.3.1"
-                     }
+    "scripts": {
+        "start": "node server.js",
+        "backend": "node server.js",
+        "frontend": "cd spares-frontend && npm run dev",
+        "build": "cd spares-frontend && npm run build"
+    },
+    "dependencies": {
+        "bcryptjs": "^2.4.3",
+        "dotenv": "^16.3.1",
+        "express": "^5.2.1",
+        "jsonwebtoken": "^9.0.3",
+        "sqlite3": "^6.0.1"
+    },
+    "devDependencies": {
+        "vite": "^8.0.16"
+    }
 }

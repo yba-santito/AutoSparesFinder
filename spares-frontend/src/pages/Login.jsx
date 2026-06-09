@@ -9,7 +9,8 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-const API_BASE_URL = window.location.hostname === 'localhost' ? 'http://localhost:3000' : '';
+// Use an empty string so requests are relative and handled by the Vite proxy
+const API_BASE_URL = '';
 
 const handleSubmit = async (e) => {
   e.preventDefault();

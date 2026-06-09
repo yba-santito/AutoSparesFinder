@@ -10,12 +10,15 @@ const Contact = () => {
     fuel_type: '',
     engine_capacity: '',
     part_type_id: '',
+    make: '',
+    model: '',
+    year: '',
   });
   const [partTypes, setPartTypes] = useState([]);
   const [status, setStatus] = useState('');
 
-  // CHANGED: Points directly to port 5000 during local development
-  const API_BASE_URL = window.location.hostname === 'localhost' ? 'http://localhost:3000' : '';
+  // Use an empty string so requests are relative and handled by the Vite proxy
+  const API_BASE_URL = '';
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/part-types`)
@@ -62,7 +65,8 @@ const Contact = () => {
         setStatus('Lead submitted successfully!');
         setFormData({
           name: '', email: '', phone: '', message: '',
-          fuel_type: '', engine_capacity: '', part_type_id: ''
+          fuel_type: '', engine_capacity: '', part_type_id: '',
+          make: '', model: '', year: ''
         });
       } else {
         setStatus('Failed to submit lead.');
@@ -110,6 +114,9 @@ const Contact = () => {
           <textarea name="message" value={formData.message} onChange={handleFormChange} className="form-textarea" placeholder="How can we help you?" required></textarea>
           
           <h3 style={{ marginTop: '20px' }}>Part Details (Optional Lead Info)</h3>
+          <input type="text" name="make" value={formData.make} onChange={handleFormChange} className="form-input" placeholder="Make (e.g., Toyota)" />
+          <input type="text" name="model" value={formData.model} onChange={handleFormChange} className="form-input" placeholder="Model (e.g., Corolla)" />
+          <input type="text" name="year" value={formData.year} onChange={handleFormChange} className="form-input" placeholder="Year (e.g., 2018)" />
           <select name="fuel_type" value={formData.fuel_type} onChange={handleFormChange} className="form-input">
             <option value="">-- Select Fuel Type --</option>
             <option value="petrol">Petrol</option>

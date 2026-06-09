@@ -240,26 +240,14 @@ function getPartLeadsWithAvailability() {
             SELECT 
                 pl.*, 
                 pt.type_name,
-                COALESCE(CASE
-                    -- If we have vehicle info, use a precise fitment check
-                    WHEN pl.make IS NOT NULL AND pl.model IS NOT NULL AND pl.year IS NOT NULL THEN
-                        (SELECT SUM(p.stock_quantity)
-                         FROM Parts p
-                         JOIN VehiclePartFitment vpf ON p.part_id = vpf.part_id
-                         JOIN Vehicles v ON vpf.vehicle_id = v.vehicle_id
-                         JOIN Makes m ON v.make_id = m.make_id
-                         WHERE p.part_type_id = pl.part_type_id
-                           AND m.make_name = pl.make
-                           AND v.model_name = pl.model
-                           AND CAST(pl.year AS INTEGER) BETWEEN v.year_start AND v.year_end)
-                    -- Otherwise, fall back to a generic check on part attributes
-                    ELSE
-                        (SELECT SUM(p.stock_quantity) 
-                         FROM Parts p 
-                         WHERE p.part_type_id = pl.part_type_id 
-                           AND p.fuel_type IS pl.fuel_type
-                           AND p.engine_capacity IS pl.engine_capacity)
-                END, 0) AS available_stock
+                COALESCE(
+                    (SELECT SUM(p.stock_quantity) 
+                     FROM Parts p 
+                     WHERE p.part_type_id = pl.part_type_id 
+                       AND p.fuel_type = pl.fuel_type 
+                       AND p.engine_capacity = pl.engine_capacity
+                    ), 0
+                ) AS available_stock
             FROM PartLeads pl
             LEFT JOIN PartTypes pt ON pl.part_type_id = pt.part_type_id
             ORDER BY pl.created_at DESC
@@ -275,7 +263,7 @@ function savePartLead(leadData) {
     return new Promise((resolve, reject) => {
         const { name, email, phone, message, part_type_id, fuel_type, engine_capacity, part_name, make, model, year } = leadData;
         const sql = `INSERT INTO PartLeads (name, email, phone, message, part_type_id, fuel_type, engine_capacity, part_name, make, model, year, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unattended')`;
-        db.run(sql, [name, email, phone, message, part_type_id, fuel_type, engine_capacity, part_name, make, model, year], function(err) {
+        db.run(sql, [name, email, phone, message, part_type_id || null, fuel_type || null, engine_capacity || null, part_name || null, make || null, model || null, year || null], function(err) {
             if (err) reject(err);
             else resolve(this.lastID);
         });
